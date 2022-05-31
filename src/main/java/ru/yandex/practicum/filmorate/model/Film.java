@@ -7,13 +7,13 @@ import java.time.LocalDate;
 
 @Data
 public class Film {
-    Integer id;
+    private Integer id;
 
     @NonNull
-    String name;
-    String description;
-    LocalDate releaseDate;
-    Integer duration;
+    private String name;
+    private String description;
+    private LocalDate releaseDate;
+    private Integer duration;
 
     public Film(String name, String description, LocalDate releaseDate, Integer duration) {
         this.name = name;
