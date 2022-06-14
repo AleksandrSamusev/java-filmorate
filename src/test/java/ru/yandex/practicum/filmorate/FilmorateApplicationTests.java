@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -652,7 +654,6 @@ class FilmorateApplicationTests {
         Assertions.assertEquals("Пользователь не найден.", thrown.getMessage());
     }
 
-
     @Test
     void getAllFilms() {
         FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
@@ -746,4 +747,420 @@ class FilmorateApplicationTests {
         Assertions.assertEquals("Movie", filmController.getAllFilms().get(0).getName(),
                 "Wrong name");
     }
+
+    @Test
+    void getFilmByIdWhenIdIsExist() throws ValidationException {
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(new InMemoryUserStorage())));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+
+        filmController.addFilm(film1);
+        Assertions.assertEquals(film1, filmController.receiveFilmById(1L), "Wrong film");
+    }
+
+    @Test
+    void getFilmByIdWhenIdIsNotExist() throws ValidationException {
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(new InMemoryUserStorage())));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+
+        filmController.addFilm(film1);
+        FilmNotFoundException thrown = Assertions.assertThrows(FilmNotFoundException.class, () -> {
+            filmController.receiveFilmById(100L);
+        });
+        Assertions.assertEquals("Фильм не найден", thrown.getMessage());
+    }
+
+    @Test
+    void getFilmByIdWhenIdIsNegative() throws ValidationException {
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(new InMemoryUserStorage())));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+
+        filmController.addFilm(film1);
+        FilmNotFoundException thrown = Assertions.assertThrows(FilmNotFoundException.class, () -> {
+            filmController.receiveFilmById(-1L);
+        });
+        Assertions.assertEquals("Фильм не найден", thrown.getMessage());
+    }
+
+    @Test
+    void likeTheFilmIfUserIdAndFilmIdAreValid() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+
+        filmController.giveLike(1L, 1L);
+        Assertions.assertEquals(1, filmController.getAllFilms().get(0).getUsersLikes().size(),
+                "Wrong size");
+        Assertions.assertTrue(filmController.getAllFilms().get(0).getUsersLikes().contains(1L),
+                "Wrong user ID");
+    }
+
+    @Test
+    void likeTheFilmIfUserIdIsNotValid() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+
+        UserNotFoundException thrown = Assertions.assertThrows(UserNotFoundException.class, () -> {
+            filmController.giveLike(1L, 123L);
+        });
+        Assertions.assertEquals("Пользователь не найден", thrown.getMessage());
+    }
+
+    @Test
+    void likeTheFilmIfFilmIdIsNotValid() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+
+        FilmNotFoundException thrown = Assertions.assertThrows(FilmNotFoundException.class, () -> {
+            filmController.giveLike(321L, 1L);
+        });
+        Assertions.assertEquals("Фильм не найден", thrown.getMessage());
+    }
+
+    @Test
+    void likeTheFilmIfFilmIdIsNegative() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+
+        FilmNotFoundException thrown = Assertions.assertThrows(FilmNotFoundException.class, () -> {
+            filmController.giveLike(-1L, 1L);
+        });
+        Assertions.assertEquals("Фильм не найден", thrown.getMessage());
+    }
+
+    @Test
+    void likeTheFilmIfUserIdIsNegative() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+
+        UserNotFoundException thrown = Assertions.assertThrows(UserNotFoundException.class, () -> {
+            filmController.giveLike(1L, -1L);
+        });
+        Assertions.assertEquals("Пользователь не найден", thrown.getMessage());
+    }
+
+
+    @Test
+    void removeLikeFromFilmIfUserIdAndFilmIdAreValid() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+
+        filmController.giveLike(1L, 1L);
+        Assertions.assertEquals(1, filmController.getAllFilms().get(0).getUsersLikes().size(),
+                "Wrong size");
+        Assertions.assertTrue(filmController.getAllFilms().get(0).getUsersLikes().contains(1L),
+                "Wrong user ID");
+        filmController.removeLike(1L, 1L);
+        Assertions.assertEquals(0, filmController.getAllFilms().get(0).getUsersLikes().size(),
+                "Wrong size");
+    }
+
+    @Test
+    void removeLikeFromFilmIfUserIdIsNotValid() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+        filmController.giveLike(1L, 1L);
+        Assertions.assertEquals(1, filmController.getAllFilms().get(0).getUsersLikes().size(),
+                "Wrong size");
+        Assertions.assertTrue(filmController.getAllFilms().get(0).getUsersLikes().contains(1L),
+                "Wrong user ID");
+        UserNotFoundException thrown = Assertions.assertThrows(UserNotFoundException.class, () -> {
+            filmController.removeLike(1L, 123L);
+        });
+        Assertions.assertEquals("Пользователь не найден", thrown.getMessage());
+    }
+
+    @Test
+    void removeLikeFromFilmIfUserIdIsNegative() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+        filmController.giveLike(1L, 1L);
+        Assertions.assertEquals(1, filmController.getAllFilms().get(0).getUsersLikes().size(),
+                "Wrong size");
+        Assertions.assertTrue(filmController.getAllFilms().get(0).getUsersLikes().contains(1L),
+                "Wrong user ID");
+        UserNotFoundException thrown = Assertions.assertThrows(UserNotFoundException.class, () -> {
+            filmController.removeLike(1L, -1L);
+        });
+        Assertions.assertEquals("Пользователь не найден", thrown.getMessage());
+    }
+
+    @Test
+    void removeLikeFromFilmIfFilmIdIsNegative() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+        filmController.giveLike(1L, 1L);
+        Assertions.assertEquals(1, filmController.getAllFilms().get(0).getUsersLikes().size(),
+                "Wrong size");
+        Assertions.assertTrue(filmController.getAllFilms().get(0).getUsersLikes().contains(1L),
+                "Wrong user ID");
+
+        FilmNotFoundException thrown = Assertions.assertThrows(FilmNotFoundException.class, () -> {
+            filmController.giveLike(-1L, 1L);
+        });
+        Assertions.assertEquals("Фильм не найден", thrown.getMessage());
+    }
+
+    @Test
+    void removeLikeFromFilmIfFilmIdIsNotValid() throws ValidationException {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(userStorage)));
+
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+
+        User user1 = new User("max1", "Max1", "sergeev1@max.uzu",
+                LocalDate.of(2011, 6, 16));
+        userStorage.addUser(user1);
+        filmController.giveLike(1L, 1L);
+        Assertions.assertEquals(1, filmController.getAllFilms().get(0).getUsersLikes().size(),
+                "Wrong size");
+        Assertions.assertTrue(filmController.getAllFilms().get(0).getUsersLikes().contains(1L),
+                "Wrong user ID");
+
+        FilmNotFoundException thrown = Assertions.assertThrows(FilmNotFoundException.class, () -> {
+            filmController.giveLike(123L, 1L);
+        });
+        Assertions.assertEquals("Фильм не найден", thrown.getMessage());
+    }
+
+    @Test
+    void removeFilmIfFilmIdIsValid() throws ValidationException {
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(new InMemoryUserStorage())));
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+        Assertions.assertEquals(1, filmController.getAllFilms().size(), "Wrong size");
+        Assertions.assertTrue(filmController.getAllFilms().contains(film1), "FALSE received");
+        filmController.removeFilm(1L);
+        Assertions.assertEquals(0, filmController.getAllFilms().size(), "Wrong size");
+    }
+
+    @Test
+    void removeFilmIfFilmIdIsNotValid() throws ValidationException {
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(new InMemoryUserStorage())));
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+        Assertions.assertEquals(1, filmController.getAllFilms().size(), "Wrong size");
+        Assertions.assertTrue(filmController.getAllFilms().contains(film1), "FALSE received");
+
+        FilmNotFoundException thrown = Assertions.assertThrows(FilmNotFoundException.class, () -> {
+            filmController.removeFilm(657L);
+        });
+        Assertions.assertEquals("Фильм не найден", thrown.getMessage());
+    }
+
+    @Test
+    void removeFilmIfFilmIdIsNegative() throws ValidationException {
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(new InMemoryUserStorage())));
+        Film film1 = new Film("Film", "film_description",
+                LocalDate.of(1999, 4, 5), 90);
+        filmController.addFilm(film1);
+        Assertions.assertEquals(1, filmController.getAllFilms().size(), "Wrong size");
+        Assertions.assertTrue(filmController.getAllFilms().contains(film1), "FALSE received");
+
+        FilmNotFoundException thrown = Assertions.assertThrows(FilmNotFoundException.class, () -> {
+            filmController.removeFilm(-1L);
+        });
+        Assertions.assertEquals("Фильм не найден", thrown.getMessage());
+    }
+
+    @Test
+    void getListOfMostPopularFilmsIfCountParameterIsValidAndLessThenNumberOfFilms() throws ValidationException {
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(new InMemoryUserStorage())));
+        Film film1 = new Film("Film1", "film_description1",
+                LocalDate.of(2001, 1, 11), 111);
+        Film film2 = new Film("Film2", "film_description2",
+                LocalDate.of(2002, 2, 12), 112);
+        Film film3 = new Film("Film3", "film_description3",
+                LocalDate.of(2003, 3, 13), 113);
+        Film film4 = new Film("Film4", "film_description4",
+                LocalDate.of(2004, 4, 14), 114);
+        film1.getUsersLikes().add(1L);
+
+        film2.getUsersLikes().add(2L);
+        film2.getUsersLikes().add(3L);
+
+        film3.getUsersLikes().add(4L);
+        film3.getUsersLikes().add(5L);
+        film3.getUsersLikes().add(6L);
+
+        filmController.addFilm(film1);
+        filmController.addFilm(film2);
+        filmController.addFilm(film3);
+        filmController.addFilm(film4);
+
+        Assertions.assertEquals(3, filmController.receiveMostRankedFilms(3).size(),
+                "Wrong size");
+        Assertions.assertEquals(film3, filmController.receiveMostRankedFilms(3).get(0),
+                "Wrong film");
+        Assertions.assertEquals(film2, filmController.receiveMostRankedFilms(3).get(1),
+                "Wrong film");
+        Assertions.assertEquals(film1, filmController.receiveMostRankedFilms(3).get(2),
+                "Wrong film");
+    }
+
+    @Test
+    void getListOfMostPopularFilmsIfCountParameterIsValidAndHigherThenNumberOfFilms() throws ValidationException {
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(new InMemoryUserStorage())));
+        Film film1 = new Film("Film1", "film_description1",
+                LocalDate.of(2001, 1, 11), 111);
+        Film film2 = new Film("Film2", "film_description2",
+                LocalDate.of(2002, 2, 12), 112);
+        Film film3 = new Film("Film3", "film_description3",
+                LocalDate.of(2003, 3, 13), 113);
+        Film film4 = new Film("Film4", "film_description4",
+                LocalDate.of(2004, 4, 14), 114);
+        film1.getUsersLikes().add(1L);
+
+        film2.getUsersLikes().add(2L);
+        film2.getUsersLikes().add(3L);
+
+        film3.getUsersLikes().add(4L);
+        film3.getUsersLikes().add(5L);
+        film3.getUsersLikes().add(6L);
+
+        filmController.addFilm(film1);
+        filmController.addFilm(film2);
+        filmController.addFilm(film3);
+        filmController.addFilm(film4);
+
+        Assertions.assertEquals(4, filmController.receiveMostRankedFilms(120).size(),
+                "Wrong size");
+        Assertions.assertEquals(film3, filmController.receiveMostRankedFilms(120).get(0),
+                "Wrong film");
+        Assertions.assertEquals(film2, filmController.receiveMostRankedFilms(120).get(1),
+                "Wrong film");
+        Assertions.assertEquals(film1, filmController.receiveMostRankedFilms(120).get(2),
+                "Wrong film");
+        Assertions.assertEquals(film4, filmController.receiveMostRankedFilms(120).get(3),
+                "Wrong film");
+    }
+
+    @Test
+    void getListOfMostPopularFilmsIfCountParameterIsNotValid() throws ValidationException {
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                new UserService(new InMemoryUserStorage())));
+        Film film1 = new Film("Film1", "film_description1",
+                LocalDate.of(2001, 1, 11), 111);
+        Film film2 = new Film("Film2", "film_description2",
+                LocalDate.of(2002, 2, 12), 112);
+
+        film1.getUsersLikes().add(1L);
+
+        film2.getUsersLikes().add(2L);
+        film2.getUsersLikes().add(3L);
+
+        filmController.addFilm(film1);
+        filmController.addFilm(film2);
+
+        IncorrectParameterException thrown = Assertions.assertThrows(IncorrectParameterException.class, () -> {
+            filmController.receiveMostRankedFilms(-5);
+        });
+        Assertions.assertEquals("count", thrown.getParameter());
+
+        IncorrectParameterException thrown2 = Assertions.assertThrows(IncorrectParameterException.class, () -> {
+            filmController.receiveMostRankedFilms(0);
+        });
+        Assertions.assertEquals("count", thrown2.getParameter());
+    }
+
+
 }
+

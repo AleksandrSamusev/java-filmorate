@@ -42,7 +42,7 @@ public class FilmService {
             }
         }
         log.info("фильм с id = {} не найден", id);
-        return null;
+        throw new FilmNotFoundException("Фильм не найден");
     }
 
     public void giveLike(Long filmId, Long userId) {

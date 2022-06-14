@@ -56,7 +56,7 @@ public class FilmController {
     public void giveLike(
             @PathVariable Long id,
             @PathVariable Long userId
-    ) throws ValidationException {
+    ) {
         filmService.giveLike(id, userId);
     }
 
