@@ -1,78 +1,75 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
 @RequestMapping("/films")
 public class FilmController {
-    private static final LocalDate THE_BORN_OF_CINEMATOGRAPHY = LocalDate.of(1895, 12, 28);
-    private static Integer filmIdCounter = 0;
-    private Map<Integer, Film> films = new HashMap<>();
 
-    public static void setFilmIdCounter(Integer filmIdCounter) {
-        FilmController.filmIdCounter = filmIdCounter;
+    FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
     }
 
     @GetMapping
     public List<Film> getAllFilms() {
-        List<Film> filmList = new ArrayList<Film>();
-        filmList.addAll(films.values());
-        return filmList;
+        return filmService.getFilmStorage().getAllFilms();
+    }
+
+    @GetMapping("/{id}")
+    public Film receiveFilmById(@PathVariable Long id) {
+        return filmService.getFilmById(id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> receiveMostRankedFilms(
+            @RequestParam(defaultValue = "10") int count
+    ) {
+        if (count <= 0) {
+            throw new IncorrectParameterException("count");
+        }
+        return filmService.getMostPopularFilms(count);
     }
 
     @PostMapping
     public Film addFilm(@RequestBody Film film) throws ValidationException {
-        if (isValid(film)) {
-            film.setId(++filmIdCounter);
-            films.put(film.getId(), film);
-        }
-        return film;
+        return filmService.getFilmStorage().addFilm(film);
     }
-
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) throws ValidationException {
-        if (isValid(film)) {
-            if (film.getId() != 0 && films.containsKey(film.getId())) {
-                films.put(film.getId(), film);
-                log.info("Добавлен фильм: {} ", film.getName());
-            } else {
-                film.setId(++filmIdCounter);
-                films.put(film.getId(), film);
-                log.info("Добавлен фильм: {} ", film.getName());
-            }
-        }
-        return film;
+        return filmService.getFilmStorage().updateFilm(film);
     }
 
+    @PutMapping("/{id}/like/{userId}")
+    public void giveLike(
+            @PathVariable Long id,
+            @PathVariable Long userId
+    ) throws ValidationException {
+        filmService.giveLike(id, userId);
+    }
 
-    private boolean isValid(Film film) throws ValidationException {
-        if (film.getName().isBlank()) {
-            log.info("ValidationException: не указано название фильма");
-            throw new ValidationException("Не указано название фильма");
-        } else if (film.getDescription().length() > 200) {
-            log.info("ValidationException: описание фильма содержит более 200 символов.");
-            throw new ValidationException("Описание фильма содержит более 200 символов.");
-        } else if (film.getReleaseDate().isBefore(THE_BORN_OF_CINEMATOGRAPHY)) {
-            log.info("ValidationException: некорректная дата релиза фильма");
-            throw new ValidationException("Некорректная дата релиза фильма");
-        } else if (film.getDuration() <= 0) {
-            log.info("ValidationException: некорректно задана продолжительность фильма");
-            throw new ValidationException("Некорректно задана продолжительность фильма");
-        } else if (film.getId() < 0) {
-            log.info("в поле user.name записано значение поля user.login");
-            throw new ValidationException("Передан отрицательный id");
-        }
-        return true;
+    @DeleteMapping("/{id}")
+    public void removeFilm(@PathVariable Long id) {
+        filmService.getFilmStorage().deleteFilm(id);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(
+            @PathVariable Long id,
+            @PathVariable Long userId
+    ) {
+        filmService.removeLike(id, userId);
     }
 }
