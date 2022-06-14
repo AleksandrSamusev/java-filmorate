@@ -62,7 +62,7 @@ public class UserController {
     public void addFriend(
             @PathVariable Long id,
             @PathVariable Long friendId
-    ) throws ValidationException {
+    ) {
         userService.addFriend(id, friendId);
     }
 
@@ -70,7 +70,7 @@ public class UserController {
     public void removeFriend(
             @PathVariable Long id,
             @PathVariable Long friendId
-    ) throws ValidationException {
+    ) {
         userService.removeFriend(id, friendId);
     }
 

@@ -20,7 +20,7 @@ public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    UserService(InMemoryUserStorage userStorage) {
+    public UserService(InMemoryUserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -70,8 +70,8 @@ public class UserService {
                 return user;
             }
         }
-        log.info("Пользователя с id = \"{}\" не найден", id);
-        return null;
+        log.info("UserNotFoundException: пользователь не найден");
+        throw new UserNotFoundException("Пользователь не найден");
     }
 
     public List<User> getFriendsList(Long userId) {
