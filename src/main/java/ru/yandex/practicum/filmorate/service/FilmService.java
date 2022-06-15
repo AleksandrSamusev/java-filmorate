@@ -28,43 +28,40 @@ public class FilmService {
 
     public Film getFilmById(Long id) {
         if (id < 0) {
-            log.info("FilmNotFoundException: фильм не найден");
+            log.info("FilmNotFoundException: фильм c id = \"{}\" не найден", id);
             throw new FilmNotFoundException("Фильм не найден");
         }
         for (Film film : filmStorage.getAllFilms()) {
             if (film.getId().equals(id)) {
-                log.info("вернул фильм \"{}\"", film.getId());
+                log.info("вернул фильм c id = \"{}\"", film.getId());
                 return film;
             }
         }
-        log.info("фильм с id = {} не найден", id);
+        log.info("фильм c id = \"{}\" не найден", id);
         throw new FilmNotFoundException("Фильм не найден");
     }
 
     public void giveLike(Long filmId, Long userId) {
-        if (userService.getUserById(userId) == null) {
-            log.info("UserNotFoundException: пользователь не найден");
-            throw new UserNotFoundException("Пользователь не найден");
-        }
-        if (getFilmById(filmId) == null) {
-            log.info("FilmNotFoundException: фильм не найден");
-            throw new FilmNotFoundException("Фильм не найден");
-        }
-        log.info("Пользователь \"{}\" поставил лайк фильму \"{}\"", userId, filmId);
+        filmAndUserValidation(filmId, userId);
+        log.info("Пользователь c id = \"{}\" поставил лайк фильму c id = \"{}\"", userId, filmId);
         getFilmById(filmId).getUsersLikes().add(userId);
     }
 
     public void removeLike(Long filmId, Long userId) {
+        filmAndUserValidation(filmId, userId);
+        log.info("Пользователь c id = \"{}\" удалил лайк у фильма c id = \"{}\"", userId, filmId);
+        getFilmById(filmId).getUsersLikes().remove(userId);
+    }
+
+    private void filmAndUserValidation(Long filmId, Long userId) {
         if (userService.getUserById(userId) == null) {
-            log.info("UserNotFoundException: пользователь не найден");
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
             throw new UserNotFoundException("Пользователь не найден");
         }
         if (getFilmById(filmId) == null) {
-            log.info("FilmNotFoundException: фильм не найден");
+            log.info("FilmNotFoundException: фильм c id = \"{}\" не найден", filmId);
             throw new FilmNotFoundException("Фильм не найден");
         }
-        log.info("Пользователь \"{}\" удалил лайк у фильма \"{}\"", userId, filmId);
-        getFilmById(filmId).getUsersLikes().remove(userId);
     }
 
     public List<Film> getMostPopularFilms(int count) {

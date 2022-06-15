@@ -25,21 +25,29 @@ public class UserService {
     }
 
     public void addFriend(Long userId, Long friendId) {
-        if (getUserById(userId) == null || getUserById(friendId) == null) {
-            log.info("UserNotFoundException: пользователь не найден");
+        if (getUserById(userId) == null) {
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
+            throw new UserNotFoundException("Пользователь не найден");
+        }
+        if (getUserById(friendId) == null) {
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", friendId);
             throw new UserNotFoundException("Пользователь не найден");
         }
         User user = getUserById(userId);
         User friend = getUserById(friendId);
         user.getFriendsList().add(friendId);
-        log.info("Юзеру \"{}\" добавлен друг \"{}\"", userId, friendId);
+        log.info("Юзеру c id = \"{}\" добавлен друг c id = \"{}\"", userId, friendId);
         friend.getFriendsList().add(userId);
-        log.info("Юзеру \"{}\" добавлен друг \"{}\"", friendId, userId);
+        log.info("Юзеру c id = \"{}\" добавлен друг c id = \"{}\"", friendId, userId);
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        if (getUserById(userId) == null || getUserById(friendId) == null) {
-            log.info("UserNotFoundException: пользователь не найден");
+        if (getUserById(userId) == null) {
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
+            throw new UserNotFoundException("Пользователь не найден");
+        }
+        if (getUserById(friendId) == null) {
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", friendId);
             throw new UserNotFoundException("Пользователь не найден");
         }
         for (User user : userStorage.getAllUsers()) {
@@ -49,29 +57,29 @@ public class UserService {
             }
             if (user.getId().equals(friendId)) {
                 user.getFriendsList().remove(userId);
-                log.info("У пользователя \"{}\" удален друг \"{}\"", friendId, userId);
+                log.info("У пользователя c id = \"{}\" удален друг c id = \"{}\"", friendId, userId);
             }
         }
     }
 
     public User getUserById(Long id) {
         if (id < 0) {
-            log.info("UserNotFoundException: пользователь не найден");
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
             throw new UserNotFoundException("Пользователь не найден");
         }
         for (User user : userStorage.getAllUsers()) {
             if (user.getId().equals(id)) {
-                log.info("Вернулся пользователь \"{}\"", user.getId());
+                log.info("Вернулся пользователь c id = \"{}\"", user.getId());
                 return user;
             }
         }
-        log.info("UserNotFoundException: пользователь не найден");
+        log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
         throw new UserNotFoundException("Пользователь не найден");
     }
 
     public List<User> getFriendsList(Long userId) {
         if (getUserById(userId) == null) {
-            log.info("UserNotFoundException: пользователь не найден");
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
             throw new UserNotFoundException("Пользователь не найден");
         }
         HashSet<Long> friendsIds = getUserById(userId).getFriendsList();
@@ -79,13 +87,17 @@ public class UserService {
         for (Long id : friendsIds) {
             toReturn.add(getUserById(id));
         }
-        log.info("Список друзей пользователя \"{}\"", userId);
+        log.info("Список друзей пользователя c id = \"{}\"", userId);
         return toReturn;
     }
 
     public List<User> getCommonFriendsList(Long userId, Long friendId) {
-        if (getUserById(userId) == null || getUserById(friendId) == null) {
-            log.info("UserNotFoundException: пользователь не найден");
+        if (getUserById(userId) == null) {
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
+            throw new UserNotFoundException("Пользователь не найден");
+        }
+        if (getUserById(friendId) == null) {
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", friendId);
             throw new UserNotFoundException("Пользователь не найден");
         }
         List<User> friendList = getFriendsList(friendId);
@@ -96,7 +108,7 @@ public class UserService {
                 listToReturn.add(user);
             }
         }
-        log.info("Список общих друзей пользователей \"{}\" и \"{}\"", userId, friendId);
+        log.info("Список общих друзей пользователей c id = \"{}\" и id = \"{}\"", userId, friendId);
         return listToReturn;
     }
 
