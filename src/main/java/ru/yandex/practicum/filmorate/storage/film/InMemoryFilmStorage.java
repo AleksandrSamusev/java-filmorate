@@ -65,7 +65,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         } else if (film.getDescription().length() > 200) {
             log.info("ValidationException: описание фильма содержит более 200 символов");
             throw new ValidationException("Описание фильма содержит более 200 символов.");
-        } else if (film.getReleaseDate().isBefore(Constant.getTheBornOfCinematography())) {
+        } else if (film.getReleaseDate().isBefore(Constant.THE_BORN_OF_CINEMATOGRAPHY)) {
             log.info("ValidationException: некорректная дата релиза фильма");
             throw new ValidationException("Некорректная дата релиза фильма");
         } else if (film.getDuration() <= 0) {

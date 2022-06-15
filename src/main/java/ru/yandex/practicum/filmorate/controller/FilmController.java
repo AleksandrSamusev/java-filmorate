@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    FilmService filmService;
+    private final FilmService filmService;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -24,7 +24,7 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getAllFilms() {
-        return filmService.getFilmStorage().getAllFilms();
+        return filmService.getAllFilms();
     }
 
     @GetMapping("/{id}")
@@ -44,12 +44,12 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@RequestBody Film film) throws ValidationException {
-        return filmService.getFilmStorage().addFilm(film);
+        return filmService.addFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) throws ValidationException {
-        return filmService.getFilmStorage().updateFilm(film);
+        return filmService.updateFilm(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -62,7 +62,7 @@ public class FilmController {
 
     @DeleteMapping("/{id}")
     public void removeFilm(@PathVariable Long id) {
-        filmService.getFilmStorage().deleteFilm(id);
+        filmService.deleteFilm(id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")

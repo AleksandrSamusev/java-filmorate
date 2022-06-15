@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -11,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
 
 @Service
 @Slf4j
@@ -22,10 +22,6 @@ public class UserService {
     @Autowired
     public UserService(InMemoryUserStorage userStorage) {
         this.userStorage = userStorage;
-    }
-
-    public UserStorage getUserStorage() {
-        return userStorage;
     }
 
     public void addFriend(Long userId, Long friendId) {
@@ -39,7 +35,6 @@ public class UserService {
         log.info("Юзеру \"{}\" добавлен друг \"{}\"", userId, friendId);
         friend.getFriendsList().add(userId);
         log.info("Юзеру \"{}\" добавлен друг \"{}\"", friendId, userId);
-
     }
 
     public void removeFriend(Long userId, Long friendId) {
@@ -103,6 +98,22 @@ public class UserService {
         }
         log.info("Список общих друзей пользователей \"{}\" и \"{}\"", userId, friendId);
         return listToReturn;
+    }
+
+    public List<User> getAllUsers() {
+        return userStorage.getAllUsers();
+    }
+
+    public User addUser(User user) throws ValidationException, UserNotFoundException {
+        return userStorage.addUser(user);
+    }
+
+    public void deleteUser(Long id) {
+        userStorage.deleteUser(id);
+    }
+
+    public User updateUser(User user) throws ValidationException, UserNotFoundException {
+        return userStorage.updateUser(user);
     }
 
 }

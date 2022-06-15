@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
@@ -12,7 +13,6 @@ import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 @Slf4j
@@ -24,10 +24,6 @@ public class FilmService {
     public FilmService(InMemoryFilmStorage filmStorage, UserService userService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
-    }
-
-    public FilmStorage getFilmStorage() {
-        return filmStorage;
     }
 
     public Film getFilmById(Long id) {
@@ -77,5 +73,21 @@ public class FilmService {
                 .sorted(Comparator.comparingInt(o -> -o.getUsersLikes().size()))
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    public List<Film> getAllFilms() {
+        return filmStorage.getAllFilms();
+    }
+
+    public Film addFilm(Film film) throws ValidationException, FilmNotFoundException {
+        return filmStorage.addFilm(film);
+    }
+
+    public Film updateFilm(Film film) throws ValidationException, FilmNotFoundException {
+        return filmStorage.updateFilm(film);
+    }
+
+    public void deleteFilm(Long id) {
+        filmStorage.deleteFilm(id);
     }
 }

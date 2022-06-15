@@ -26,7 +26,7 @@ public class UserController {
 
     @GetMapping
     public List<User> getAllUsers() {
-        return userService.getUserStorage().getAllUsers();
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
@@ -48,13 +48,13 @@ public class UserController {
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) throws ValidationException {
-        userService.getUserStorage().addUser(user);
+        userService.addUser(user);
         return user;
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) throws ValidationException {
-        userService.getUserStorage().updateUser(user);
+        userService.updateUser(user);
         return user;
     }
 
@@ -76,6 +76,6 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void removeUser(@PathVariable Long id) {
-        userService.getUserStorage().deleteUser(id);
+        userService.deleteUser(id);
     }
 }

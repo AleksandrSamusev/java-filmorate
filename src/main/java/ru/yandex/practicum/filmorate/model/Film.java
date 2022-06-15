@@ -33,7 +33,10 @@ public class Film {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Film film = (Film) o;
-        return name.equals(film.name) && Objects.equals(description, film.description) && Objects.equals(releaseDate, film.releaseDate) && Objects.equals(duration, film.duration);
+        return name.equals(film.name)
+                && Objects.equals(description, film.description)
+                && Objects.equals(releaseDate, film.releaseDate)
+                && Objects.equals(duration, film.duration);
     }
 
     @Override
