@@ -170,7 +170,6 @@ class FilmorateApplicationTests {
 
         UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
         userController.addUser(user1);
-        userController.getAllUsers().size();
 
         user2.setId(1L);
         userController.updateUser(user2);
