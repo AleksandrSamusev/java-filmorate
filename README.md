@@ -2,9 +2,9 @@
 
 ### ER-диаграмма базы данных проекта java-filmorate
 
-<img height="400" src="C:\Users\samus\development\java\java-filmorate\src\main\resources\static\diagram.png" width="750"/>
+<img height="400" src="https://github.com/AleksandrSamusev/java-filmorate/blob/add-friends-likes/src/main/resources/static/diagram.png?raw=true/">
 
-### Таблица users (пример)
+### Таблица users (пример)"
 
 | user_id |      email      | login  |    name     |  birthday   |
 |:-------:|:---------------:|:------:|:-----------:|:-----------:|
