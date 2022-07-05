@@ -2,7 +2,7 @@
 
 ### ER-диаграмма базы данных проекта java-filmorate
 
-<img height="400" src="https://github.com/AleksandrSamusev/java-filmorate/blob/add-friends-likes/src/main/resources/static/diagram.png?raw=true/">
+<img height="400" src="https://github.com/AleksandrSamusev/java-filmorate/blob/ER-diagram/src/main/resources/static/diagram.png?raw=true">
 
 ### Таблица users (пример)"
 
