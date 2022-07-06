@@ -5,7 +5,7 @@ import lombok.NonNull;
 
 import javax.validation.constraints.Email;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Objects;
 
 @Data
@@ -21,7 +21,7 @@ public class User {
 
     private String name;
     private LocalDate birthday;
-    private HashSet<Long> friendsList;
+    private HashMap<Long, Boolean> friendsAndRequests;
 
     public User(String login, String name, String email, LocalDate birthday) {
         this.login = login;
@@ -29,11 +29,7 @@ public class User {
         this.email = email;
         this.birthday = birthday;
         this.id = 0L;
-        this.friendsList = new HashSet<>();
-    }
-
-    public HashSet<Long> getFriendsList() {
-        return friendsList;
+        this.friendsAndRequests = new HashMap<>();
     }
 
     @Override

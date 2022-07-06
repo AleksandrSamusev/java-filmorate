@@ -4,7 +4,9 @@ import lombok.Data;
 import lombok.NonNull;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -15,9 +17,12 @@ public class Film {
 
     @NonNull
     private String name;
+
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
+    private List<String> genre;
+    private String mpaRating;
 
     public Film(String name, String description, LocalDate releaseDate, Integer duration) {
         this.name = name;
@@ -25,7 +30,6 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.id = 0L;
-        this.usersLikes = new HashSet<>();
     }
 
     @Override
