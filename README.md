@@ -2,7 +2,7 @@
 
 ### ER-диаграмма базы данных проекта java-filmorate
 
-<img height="400" src="https://github.com/AleksandrSamusev/java-filmorate/blob/add-friends-likes/src/main/resources/static/diagram.png?raw=true/">
+<img height="400" src="https://github.com/AleksandrSamusev/java-filmorate/blob/ER-diagram/src/main/resources/static/diagram.png?raw=true">
 
 ### Таблица users (пример)"
 
@@ -50,7 +50,26 @@ TABLE "friendship" CONSTRAINT "friendship_user_id_fkey" FOREIGN KEY (user_id) RE
 "friendship_friend_id_fkey" FOREIGN KEY (friend_id) REFERENCES users(user_id) <br />
 "friendship_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id)
 
-<br /><br />
+<br />
+
+### Таблица users_liked_films (пример)
+| user_id | film_id |
+|:-------:|:-------:|
+|    1    |    4    |
+|    2    |    5    |
+|    1    |    3    |
+|    1    |    1    |
+
+#### Индексы: <br />
+
+"user_film_id" PRIMARY KEY, btree (user_id, film_id) <br />
+
+#### Ограничения внешнего ключа: <br />
+
+"users_liked_films_film_id_fkey" FOREIGN KEY (film_id) REFERENCES films(film_id) <br />
+"users_liked_films_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) <br />
+
+<br />
 
 #### Примеры запросов:
 
@@ -101,15 +120,50 @@ GROUP BY user_id, friend_id; <br />
 
 <br />
 
+#### 4. Получить имя и список id любимых фильмов пользователя с id=1
+
+SELECT u.user_id AS id, u.name AS name, ulf.film_id <br />
+FROM users AS u <br />
+INNER JOIN users_liked_films AS ulf ON ulf.user_id = u.user_id <br />
+WHERE u.user_id = 1; <br />
+
+#### Вывод:
+
+| id  |     name     | film_id |
+|:---:|:------------:|:-------:|
+|  1  | user_1_name  |    4    |
+|  1  | user_1_name  |    3    |
+|  1  | user_1_name  |    1    |
+
+<br />
+
+#### 5. Получить названия фильмов пользователя с id=1 и вывести в алфавитном порядке
+
+SELECT ulf.user_id AS id, f.name AS name <br />
+FROM users_liked_films AS ulf <br />
+INNER JOIN films AS f ON ulf.film_id = f.film_id <br />
+WHERE ulf.user_id = 1 <br />
+ORDER BY f.name ASC; <br />
+
+#### Вывод:
+
+| id  | name         |
+|:---:|:-------------|
+|  1  | Интерстеллар |
+|  1  | Начало       |
+|  1  | Отступники   |
+
+<br />
+
 ### Таблица films (пример)
 
-| film_id | name                               | description        | release_date | duration |  likes  | genre   | mpa_rating | rate |
-|:-------:|------------------------------------|--------------------|--------------|:--------:|:-------:|:--------|:-----------|:----:|
-|    1    | Отступники                         | \*описание фильма* | 2006-01-01   |   151    | 1294769 | боевик  | NC-17      |  10  |
-|    2    | Умница Уилл Хантинг                | \*описание фильма* | 1997-01-01   |   126    | 943990  | драма   | PG         |  9   |
-|    3    | Начало                             | \*описание фильма* | 2010-01-01   |   148    | 2285903 | триллер | PG-13      |  8   |
-|    4    | Интерстеллар                       | \*описание фильма* | 2014-01-01   |   169    | 1747726 | триллер | G          |  8   |
-|    5    | Темный рыцарь: Возрождение легенды | \*описание фильма* | 2012-01-01   |   164    | 1663443 | боевик  | PG-13      |  7   |
+| film_id | name                               | description        | release_date | duration |  likes  | mpa_rating | rate |
+|:-------:|------------------------------------|--------------------|--------------|:--------:|:-------:|:-----------|:----:|
+|    1    | Отступники                         | \*описание фильма* | 2006-01-01   |   151    | 1294769 | NC-17      |  10  |
+|    2    | Умница Уилл Хантинг                | \*описание фильма* | 1997-01-01   |   126    | 943990  | PG         |  9   |
+|    3    | Начало                             | \*описание фильма* | 2010-01-01   |   148    | 2285903 | PG-13      |  8   |
+|    4    | Интерстеллар                       | \*описание фильма* | 2014-01-01   |   169    | 1747726 | G          |  8   |
+|    5    | Темный рыцарь: Возрождение легенды | \*описание фильма* | 2012-01-01   |   164    | 1663443 | PG-13      |  7   |
 
 #### Индексы:
 
@@ -117,13 +171,49 @@ GROUP BY user_id, friend_id; <br />
 
 #### Ограничения-проверки:
 
-"chk_genre" CHECK (genre::text = 'комедия'::text OR genre::text = 'драма'::text OR genre::text = 'мультфильм'::
-text <br />
-OR genre::text = 'триллер'::text OR genre::text = 'документальный'::text OR genre::text = 'боевик'::text) <br />
 "chk_mpa_rating" CHECK (mpa_rating::text = 'G'::text OR mpa_rating::text = 'PG'::text  <br />
 OR mpa_rating::text = 'PG-13'::text OR mpa_rating::text = 'R'::text OR mpa_rating::text = 'NC-17'::text) <br />
 
 <br />
+
+### Таблица genres (пример)
+
+| genre_id | name           |
+|:--------:|:---------------|
+|    1     | комедия        |
+|    2     | драма          |
+|    3     | мультфильм     |
+|    4     | триллер        |
+|    5     | документальный |
+|    6     | боевик         |
+
+#### Индексы:
+
+"genres_pkey" PRIMARY KEY, btree (genre_id)
+#### Ссылки извне:
+
+TABLE "films_genres" CONSTRAINT "films_genres_genre_id_fkey" FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
+
+<br />
+
+### Таблица films_genres (пример)
+
+| film_id | genre_id  |
+|:-------:|:---------:|
+|    1    |     6     |
+|    2    |     2     |
+|    3    |     4     |
+|    4    |     4     |
+|    5    |     6     |
+
+#### Индексы:
+
+"films_genre_id" PRIMARY KEY, btree (film_id, genre_id)
+#### Ограничения внешнего ключа:
+
+"films_genres_film_id_fkey" FOREIGN KEY (film_id) REFERENCES films(film_id)
+"films_genres_genre_id_fkey" FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
+
 
 #### Примеры запросов:
 
