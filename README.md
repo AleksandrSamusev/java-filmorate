@@ -122,7 +122,7 @@ GROUP BY user_id, friend_id; <br />
 
 #### 4. Получить имя и список id любимых фильмов пользователя с id=1
 
-SELECT u.user_id AS ID, u.name AS name, ulf.film_id <br />
+SELECT u.user_id AS id, u.name AS name, ulf.film_id <br />
 FROM users AS u <br />
 INNER JOIN users_liked_films AS ulf ON ulf.user_id = u.user_id <br />
 WHERE u.user_id = 1; <br />
