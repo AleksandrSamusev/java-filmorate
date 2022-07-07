@@ -13,8 +13,9 @@ import java.util.List;
 
 @Qualifier
 public class FilmDbStorage implements FilmStorage {
+    private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public FilmDbStorage (JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

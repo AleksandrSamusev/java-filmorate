@@ -32,6 +32,15 @@ public class User {
         this.friendsAndRequests = new HashMap<>();
     }
 
+    public User(Long id, String login, String name, String email, LocalDate birthday) {
+        this.login = login;
+        this.name = name;
+        this.email = email;
+        this.birthday = birthday;
+        this.id = 0L;
+        this.friendsAndRequests = new HashMap<>();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -4,23 +4,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Qualifier
 public class UserDbStorage implements UserStorage {
+    private final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public UserDbStorage (JdbcTemplate jdbcTemplate) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
     @Override
     public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        SqlRowSet usersRows = jdbcTemplate.queryForRowSet("select * from users");
+
+        if(usersRows.next()) {
+            User user = new User(
+                    usersRows.getLong("id"),
+                    usersRows.getString("email"),
+                    usersRows.getString("login"),
+                    usersRows.getString("name"),
+                    usersRows.getDate("birthday"));
+        }
+
         return null;
     }
 
