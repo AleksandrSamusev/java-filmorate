@@ -29,7 +29,7 @@ public class Film {
         this.duration = duration;
     }
 
-    
+
 
     @Override
     public boolean equals(Object o) {
