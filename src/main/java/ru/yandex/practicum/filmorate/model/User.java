@@ -5,8 +5,7 @@ import lombok.NonNull;
 
 import javax.validation.constraints.Email;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 @Data
 public class User {
@@ -21,7 +20,7 @@ public class User {
 
     private String name;
     private LocalDate birthday;
-    private HashMap<Long, Boolean> friendsAndRequests;
+    private HashSet<Long> friendsList;
 
     public User(String login, String name, String email, LocalDate birthday) {
         this.login = login;
@@ -29,7 +28,7 @@ public class User {
         this.email = email;
         this.birthday = birthday;
         this.id = 0L;
-        this.friendsAndRequests = new HashMap<>();
+        this.friendsList = new HashSet<>();
     }
 
     public User(Long id, String login, String name, String email, LocalDate birthday) {
@@ -37,8 +36,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.birthday = birthday;
-        this.id = 0L;
-        this.friendsAndRequests = new HashMap<>();
+        this.friendsList = new HashSet<>();
     }
 
     @Override
@@ -46,11 +44,13 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return email.equals(user.email);
+        return Objects.equals(id, user.id) && email.equals(user.email) && login.equals(user.login) && Objects.equals(name, user.name) && Objects.equals(birthday, user.birthday) && Objects.equals(friendsList, user.friendsList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email);
+        return Objects.hash(id, email, login, name, birthday, friendsList);
     }
 }
+
+

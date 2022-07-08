@@ -13,10 +13,9 @@ public class Film {
     private Long id;
     private HashSet<Long> usersLikes;
     private Integer rate;
-
     @NonNull
     private String name;
-
+    private Long mpaRatingId;
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
@@ -28,8 +27,9 @@ public class Film {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.id = 0L;
     }
+
+    
 
     @Override
     public boolean equals(Object o) {

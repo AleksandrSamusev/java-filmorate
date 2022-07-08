@@ -8,10 +8,11 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Qualifier
@@ -23,6 +24,7 @@ public class UserDbStorage implements UserStorage {
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
@@ -34,10 +36,11 @@ public class UserDbStorage implements UserStorage {
                     usersRows.getString("email"),
                     usersRows.getString("login"),
                     usersRows.getString("name"),
-                    usersRows.getDate("birthday"));
-        }
+                    LocalDate.parse(usersRows.getString("birthday")));
 
-        return null;
+            users.add(user);
+        }
+        return users;
     }
 
     @Override
@@ -52,6 +55,6 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void deleteUser(Long id) {
-
+        jdbcTemplate.update("DELETE * FROM users WHERE id=?", id);
     }
 }
