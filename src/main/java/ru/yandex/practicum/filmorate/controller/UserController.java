@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
+
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -45,12 +47,12 @@ public class UserController {
         userDbStorage.save(user);
     }
 
-/*    @PutMapping
-    public User updateUser(@Valid @RequestBody User user) throws ValidationException {
-        return userService.updateUser(user);
+    @PutMapping
+    public User updateUser(@Valid @RequestBody User user) {
+        return userDbStorage.updateUser(user);
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
+/*    @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(
             @PathVariable Long id,
             @PathVariable Long friendId
@@ -64,10 +66,10 @@ public class UserController {
             @PathVariable Long friendId
     ) {
         userService.removeFriend(id, friendId);
-    }
+    }*/
 
     @DeleteMapping("/{id}")
     public void removeUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-    }*/
+        userDbStorage.deleteUser(id);
+    }
 }

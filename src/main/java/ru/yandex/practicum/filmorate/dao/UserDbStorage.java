@@ -8,8 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.sql.Date;
@@ -28,7 +26,6 @@ public class UserDbStorage implements UserStorage {
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
 
     public User getUserById(Long id) {
         String sql = "select * from users where user_id = ?";
@@ -83,12 +80,23 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User user) throws ValidationException, UserNotFoundException {
-        return null;
+    public User updateUser(User user) {
+        String sqlQuery = "update users set " +
+                "login = ?, name = ?, email = ?, birthday = ? " +
+                "where user_id = ?";
+        jdbcTemplate.update(sqlQuery
+                , user.getLogin()
+                , user.getName()
+                , user.getEmail()
+                , user.getBirthday()
+                , user.getId());
+        return user;
     }
 
     @Override
     public void deleteUser(Long id) {
+        String sqlQuery = "delete from users where user_id = ?";
+        jdbcTemplate.update(sqlQuery, id);
 
     }
     public void save(User user) {
@@ -101,4 +109,7 @@ public class UserDbStorage implements UserStorage {
                 user.getBirthday());
     }
 
+    public void addFriend(Long id, Long friendId) {
+
+    }
 }
