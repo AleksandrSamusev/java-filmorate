@@ -100,13 +100,30 @@ public class UserDbStorage implements UserStorage {
     }
 
     public void addFriend(Long id, Long friendId) {
-
+        String sqlQuery = "insert into friendship (user_id, friend_id, is_confirmed) values (?, ?, true);";
+        jdbcTemplate.update(sqlQuery, id, friendId);
     }
 
     public List<User> getFriendsList(Long id) {
-        String sqlQuery = "SELECT u.user_id, u.login, u.name, u.email, u.birthday FROM users AS u" +
+        String sqlQuery = "SELECT u.* FROM users AS u" +
                 " JOIN friendship AS f ON u.user_id = f.friend_id" +
                 " WHERE f.user_id = ?;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id);
+    }
+
+    public void removeFriend(Long id, Long friend_id) {
+        String sqlQuery = "delete from friendship where user_id = ? and friend_id = ?";
+        jdbcTemplate.update(sqlQuery, id, friend_id);
+    }
+
+    public List<User> getCommonFriendsList(Long id, Long friendId) {
+        String sqlQuery = "SELECT * FROM users" +
+                " WHERE user_id IN (SELECT friend_id FROM friendship" +
+                " WHERE user_id = ? AND is_confirmed IS true" +
+                " OR user_id = ? AND is_confirmed IS true" +
+                " GROUP by friend_id" +
+                " HAVING count(friend_id) = 2);";
+
+        return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, friendId);
     }
 }

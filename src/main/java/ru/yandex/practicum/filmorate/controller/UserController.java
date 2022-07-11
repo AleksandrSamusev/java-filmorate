@@ -35,12 +35,12 @@ public class UserController {
         return userDbStorage.getFriendsList(id);
     }
 
-/*    @GetMapping("/{id}/friends/common/{otherId}")
+    @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> listOfCommonFriends(
             @PathVariable Long id,
             @PathVariable Long otherId) {
-        return userService.getCommonFriendsList(id, otherId);
-    }*/
+        return userDbStorage.getCommonFriendsList(id, otherId);
+    }
 
     @PostMapping
     public User addUser(@RequestBody User user) {
@@ -52,21 +52,21 @@ public class UserController {
         return userDbStorage.updateUser(user);
     }
 
-/*    @PutMapping("/{id}/friends/{friendId}")
+    @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(
             @PathVariable Long id,
             @PathVariable Long friendId
     ) {
-        userService.addFriend(id, friendId);
-    }*/
+        userDbStorage.addFriend(id, friendId);
+    }
 
-/*    @DeleteMapping("/{id}/friends/{friendId}")
+    @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(
             @PathVariable Long id,
             @PathVariable Long friendId
     ) {
-        userService.removeFriend(id, friendId);
-    }*/
+        userDbStorage.removeFriend(id, friendId);
+    }
 
     @DeleteMapping("/{id}")
     public void removeUser(@PathVariable Long id) {
