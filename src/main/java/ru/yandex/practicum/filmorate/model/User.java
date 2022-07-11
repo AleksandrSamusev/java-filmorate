@@ -40,7 +40,6 @@ public class User {
         this.name = name;
         this.email = email;
         this.birthday = birthday;
-        this.friendsList = new HashSet<>();
     }
 
     public User(Long id, @NonNull String email, @NonNull String login, String name,

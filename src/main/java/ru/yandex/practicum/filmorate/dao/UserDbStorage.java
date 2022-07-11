@@ -97,19 +97,16 @@ public class UserDbStorage implements UserStorage {
     public void deleteUser(Long id) {
         String sqlQuery = "delete from users where user_id = ?";
         jdbcTemplate.update(sqlQuery, id);
-
-    }
-    public void save(User user) {
-        String sqlQuery = "insert into users(login, name, email, birthday) " +
-                "values (?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery,
-                user.getLogin(),
-                user.getName(),
-                user.getEmail(),
-                user.getBirthday());
     }
 
     public void addFriend(Long id, Long friendId) {
 
+    }
+
+    public List<User> getFriendsList(Long id) {
+        String sqlQuery = "SELECT u.user_id, u.login, u.name, u.email, u.birthday FROM users AS u" +
+                " JOIN friendship AS f ON u.user_id = f.friend_id" +
+                " WHERE f.user_id = ?;";
+        return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id);
     }
 }

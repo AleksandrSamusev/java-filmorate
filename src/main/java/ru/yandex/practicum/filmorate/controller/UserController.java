@@ -30,12 +30,12 @@ public class UserController {
         return userDbStorage.getUserById(id);
     }
 
-/*    @GetMapping("/{id}/friends")
+    @GetMapping("/{id}/friends")
     public List<User> listOfFriends(@PathVariable Long id) {
-        return userService.getFriendsList(id);
+        return userDbStorage.getFriendsList(id);
     }
 
-    @GetMapping("/{id}/friends/common/{otherId}")
+/*    @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> listOfCommonFriends(
             @PathVariable Long id,
             @PathVariable Long otherId) {
@@ -43,8 +43,8 @@ public class UserController {
     }*/
 
     @PostMapping
-    public void addUser(@RequestBody User user) {
-        userDbStorage.save(user);
+    public User addUser(@RequestBody User user) {
+        return userDbStorage.addUser(user);
     }
 
     @PutMapping
