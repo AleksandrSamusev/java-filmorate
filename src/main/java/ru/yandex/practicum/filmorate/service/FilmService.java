@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+/*package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,4 +87,4 @@ public class FilmService {
     public void deleteFilm(Long id) {
         filmStorage.deleteFilm(id);
     }
-}
+}*/

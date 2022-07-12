@@ -73,13 +73,13 @@ TABLE "friendship" CONSTRAINT "friendship_user_id_fkey" FOREIGN KEY (user_id) RE
 <br />
 
 ### Таблица mpa_rating (пример)
-|  id  | name  |
-|:----:|:------|
-|  1   | G     |
-|  2   | PG    |
-|  3   | PG-13 |
-|  4   | R     |
-|  5   | NC-17 |
+| mpa_rating_id | name  |
+|:-------------:|:------|
+|       1       | G     |
+|       2       | PG    |
+|       3       | PG-13 |
+|       4       | R     |
+|       5       | NC-17 |
 
 #### Индексы: <br />
 "mpa_ratings_pkey" PRIMARY KEY, btree (mpa_rating_id) <br />

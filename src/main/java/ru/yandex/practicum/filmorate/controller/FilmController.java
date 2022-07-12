@@ -3,10 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dao.FilmDbStorage;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
 
@@ -15,21 +14,21 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final FilmService filmService;
+    private final FilmDbStorage filmDbStorage;
 
     @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
+    public FilmController(FilmDbStorage filmDbStorage) {
+        this.filmDbStorage = filmDbStorage;
     }
 
     @GetMapping
     public List<Film> getAllFilms() {
-        return filmService.getAllFilms();
+        return filmDbStorage.getAllFilms();
     }
 
     @GetMapping("/{id}")
     public Film receiveFilmById(@PathVariable Long id) {
-        return filmService.getFilmById(id);
+        return filmDbStorage.getFilmById(id);
     }
 
     @GetMapping("/popular")
@@ -39,17 +38,17 @@ public class FilmController {
         if (count <= 0) {
             throw new IncorrectParameterException("count");
         }
-        return filmService.getMostPopularFilms(count);
+        return filmDbStorage.getMostPopularFilms(count);
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) throws ValidationException {
-        return filmService.addFilm(film);
+    public Film addFilm(@RequestBody Film film){
+        return filmDbStorage.addFilm(film);
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) throws ValidationException {
-        return filmService.updateFilm(film);
+    public Film updateFilm(@RequestBody Film film) {
+        return filmDbStorage.updateFilm(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -57,12 +56,12 @@ public class FilmController {
             @PathVariable Long id,
             @PathVariable Long userId
     ) {
-        filmService.giveLike(id, userId);
+        filmDbStorage.giveLike(id, userId);
     }
 
     @DeleteMapping("/{id}")
     public void removeFilm(@PathVariable Long id) {
-        filmService.deleteFilm(id);
+        filmDbStorage.deleteFilm(id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
@@ -70,6 +69,6 @@ public class FilmController {
             @PathVariable Long id,
             @PathVariable Long userId
     ) {
-        filmService.removeLike(id, userId);
+        filmDbStorage.removeLike(id, userId);
     }
 }

@@ -47,7 +47,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getAllUsers() {
-        String sqlQuery = "select user_id, login, name, email, birthday from users";
+        String sqlQuery = "select * from users";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser);
     }
 
