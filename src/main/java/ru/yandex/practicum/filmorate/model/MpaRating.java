@@ -1,19 +1,24 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
-import lombok.Data;
-@Data
+
 @Builder
-public class Genre {
+public class MpaRating {
+
     Integer id;
     String name;
 
-    public Genre() {
-    }
-
-    public Genre(Integer id, String name) {
+    public MpaRating(Integer id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public MpaRating(Integer id) {
+        this.id = id;
+    }
+
+    public MpaRating() {
+
     }
 
     public Integer getId() {

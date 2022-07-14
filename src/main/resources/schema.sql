@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS films
     description  varchar,
     release_date date,
     duration     INTEGER,
-    likes        INTEGER,
     mpa_rating_id   INTEGER,
     rate         INTEGER,
     FOREIGN KEY (mpa_rating_id)
@@ -33,10 +32,8 @@ CREATE TABLE IF NOT EXISTS users_liked_films
     user_id int,
     film_id int,
     PRIMARY KEY (user_id, film_id),
-    FOREIGN KEY (user_id)
-        REFERENCES users (user_id),
-    FOREIGN KEY (film_id)
-        REFERENCES films (film_id)
+    FOREIGN KEY (user_id) REFERENCES users (user_id),
+    FOREIGN KEY (film_id) REFERENCES films (film_id)
 );
 
 CREATE TABLE IF NOT EXISTS friendship

@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.FilmDbStorage;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.util.List;
 
@@ -42,12 +45,12 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film){
+    public Film addFilm(@RequestBody Film film) throws ValidationException {
         return filmDbStorage.addFilm(film);
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@RequestBody Film film) throws ValidationException {
         return filmDbStorage.updateFilm(film);
     }
 
