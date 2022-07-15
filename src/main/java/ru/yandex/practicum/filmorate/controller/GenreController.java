@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
-import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.FilmDbStorage;
+import ru.yandex.practicum.filmorate.service.GenreDaoService;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
@@ -12,20 +12,21 @@ import java.util.List;
 @RequestMapping("/genres")
 public class GenreController {
 
-    private final FilmDbStorage filmDbStorage;
+    private final GenreDaoService genreDaoService;
 
     @Autowired
-    public GenreController(FilmDbStorage filmDbStorage) {
-        this.filmDbStorage = filmDbStorage;
+    public GenreController(GenreDaoService genreDaoService) {
+        this.genreDaoService = genreDaoService;
     }
+
 
     @GetMapping()
     public List<Genre> getAllGenres() {
-        return filmDbStorage.getAllGenres();
+        return genreDaoService.getAllGenres();
     }
 
     @GetMapping("/{id}")
     public Genre getGenreById(@PathVariable Integer id) {
-        return filmDbStorage.getGenreById(id);
+        return genreDaoService.getGenreById(id);
     }
 }

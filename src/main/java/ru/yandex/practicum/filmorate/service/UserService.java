@@ -1,4 +1,4 @@
-/*package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +26,16 @@ public class UserService {
     }
 
     public void addFriend(Long userId, Long friendId) {
-        if (getUserById(userId) == null) {
+        if (userStorage.getUserById(userId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        if (getUserById(friendId) == null) {
+        if (userStorage.getUserById(friendId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", friendId);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        User user = getUserById(userId);
-        User friend = getUserById(friendId);
+        User user = userStorage.getUserById(userId);
+        User friend = userStorage.getUserById(friendId);
         user.getFriendsList().add(friendId);
         log.info("Юзеру c id = \"{}\" добавлен друг c id = \"{}\"", userId, friendId);
         friend.getFriendsList().add(userId);
@@ -43,11 +43,11 @@ public class UserService {
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        if (getUserById(userId) == null) {
+        if (userStorage.getUserById(userId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        if (getUserById(friendId) == null) {
+        if (userStorage.getUserById(friendId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", friendId);
             throw new UserNotFoundException("Пользователь не найден");
         }
@@ -63,41 +63,27 @@ public class UserService {
         }
     }
 
-    public User getUserById(Long id) {
-        if (id < 0) {
-            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
-            throw new UserNotFoundException("Пользователь не найден");
-        }
-        for (User user : userStorage.getAllUsers()) {
-            if (user.getId().equals(id)) {
-                log.info("Вернулся пользователь c id = \"{}\"", user.getId());
-                return user;
-            }
-        }
-        log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
-        throw new UserNotFoundException("Пользователь не найден");
-    }
 
     public List<User> getFriendsList(Long userId) {
-        if (getUserById(userId) == null) {
+        if (userStorage.getUserById(userId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        HashSet<Long> friendsIds = getUserById(userId).getFriendsList();
+        HashSet<Long> friendsIds = userStorage.getUserById(userId).getFriendsList();
         List<User> toReturn = new ArrayList<>();
         for (Long id : friendsIds) {
-            toReturn.add(getUserById(id));
+            toReturn.add(userStorage.getUserById(id));
         }
         log.info("Список друзей пользователя c id = \"{}\"", userId);
         return toReturn;
     }
 
     public List<User> getCommonFriendsList(Long userId, Long friendId) {
-        if (getUserById(userId) == null) {
+        if (userStorage.getUserById(userId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        if (getUserById(friendId) == null) {
+        if (userStorage.getUserById(friendId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", friendId);
             throw new UserNotFoundException("Пользователь не найден");
         }
@@ -129,4 +115,7 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
-}*/
+    public User getUserById(Long id) {
+        return userStorage.getUserById(id);
+    }
+}

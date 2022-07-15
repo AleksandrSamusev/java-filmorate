@@ -20,6 +20,22 @@ public class InMemoryFilmStorage implements FilmStorage {
     private Map<Long, Film> films = new HashMap<>();
 
     @Override
+    public Film getFilmById(Long id) {
+        if (id < 0) {
+            log.info("FilmNotFoundException: фильм c id = \"{}\" не найден", id);
+            throw new FilmNotFoundException("Фильм не найден");
+        }
+        for (Film film : getAllFilms()) {
+            if (film.getId().equals(id)) {
+                log.info("вернул фильм c id = \"{}\"", film.getId());
+                return film;
+            }
+        }
+        log.info("фильм c id = \"{}\" не найден", id);
+        throw new FilmNotFoundException("Фильм не найден");
+    }
+
+    @Override
     public List<Film> getAllFilms() {
         List<Film> filmList = new ArrayList<>();
         filmList.addAll(films.values());

@@ -27,6 +27,22 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public User getUserById(Long id) {
+        if (id < 0) {
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
+            throw new UserNotFoundException("Пользователь не найден");
+        }
+        for (User user : getAllUsers()) {
+            if (user.getId().equals(id)) {
+                log.info("Вернулся пользователь c id = \"{}\"", user.getId());
+                return user;
+            }
+        }
+        log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
+        throw new UserNotFoundException("Пользователь не найден");
+    }
+
+    @Override
     public User addUser(User user) throws ValidationException, UserNotFoundException {
         if (isValid(user) && !users.containsValue(user)) {
             user.setId(UserIdGenerator.generateId());

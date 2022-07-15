@@ -1,9 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
-import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.FilmDbStorage;
-import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.MpaDaoService;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.util.List;
@@ -13,22 +12,21 @@ import java.util.List;
 @RequestMapping("/mpa")
 public class MpaController {
 
-    private final FilmDbStorage filmDbStorage;
+    private final MpaDaoService mpaDaoService;
 
     @Autowired
-    public MpaController(FilmDbStorage filmDbStorage) {
-        this.filmDbStorage = filmDbStorage;
+    public MpaController(MpaDaoService mpaDaoService) {
+        this.mpaDaoService = mpaDaoService;
     }
-
 
     @GetMapping()
     public List<MpaRating> getAllMPA() {
-        return filmDbStorage.getAllMPA();
+        return mpaDaoService.getAllMPA();
     }
 
     @GetMapping("/{id}")
     public MpaRating getMPAById(@PathVariable Integer id) {
-        return filmDbStorage.getMPAById(id);
+        return mpaDaoService.getMPAById(id);
     }
 
 }
