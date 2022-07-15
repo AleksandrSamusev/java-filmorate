@@ -2,7 +2,7 @@
 
 ### ER-диаграмма базы данных проекта java-filmorate
 
-<img height="400" src="C:\Users\samus\development\java\java-filmorate\src\main\resources\static\diagram.png">
+<img height="400" src="src/main/resources/static/diagram.png">
 
 ### Таблица users (пример)"
 
