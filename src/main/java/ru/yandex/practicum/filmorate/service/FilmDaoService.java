@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.support.Constant;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,6 +24,7 @@ public class FilmDaoService {
     private final FilmDbStorage filmDbStorage;
     private final UserDbStorage userDbStorage;
 
+
     @Autowired
     public FilmDaoService(JdbcTemplate jdbcTemplate, FilmDbStorage filmDbStorage, UserDbStorage userDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -31,27 +33,18 @@ public class FilmDaoService {
     }
 
     public List<Film> getMostPopularFilms(int count) {
-        String sqlQuery = "SELECT * FROM films AS f" +
-                " LEFT JOIN users_liked_films AS ulf ON f.FILM_ID = ulf.FILM_ID" +
-                " GROUP BY f.FILM_ID" +
-                " ORDER BY Count(user_id) DESC" +
-                " LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+        return jdbcTemplate.query(Constant.QUERY_MOST_POPULAR_FILMS, this::mapRowToFilm, count);
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
-
-        String sqlQuery = "select * from mpa_ratings where id = ?";
-        String sqlQueryForGenre = "select * from genres join FILMS_GENRES FG " +
-                "on GENRES.GENRE_ID = FG.GENRE_ID  WHERE FG.FILM_ID = ? ";
 
         return Film.builder()
                 .id(resultSet.getLong("film_id"))
                 .rate(resultSet.getInt("rate"))
                 .name(resultSet.getString("name"))
-                .mpa(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMPA,
+                .mpa(jdbcTemplate.queryForObject(Constant.QUERY_GET_MPA_BY_ID, this::mapRowToMPA,
                         resultSet.getInt("mpa_rating_id")))
-                .genres(jdbcTemplate.query(sqlQueryForGenre,
+                .genres(jdbcTemplate.query(Constant.QUERY_GET_FILM_GENRES_BY_FILM_ID,
                         this::mapRowToGenre, resultSet.getLong("film_id")))
                 .description(resultSet.getString("description"))
                 .releaseDate(resultSet.getDate("release_date").toLocalDate())
@@ -74,20 +67,18 @@ public class FilmDaoService {
     }
 
     public void removeLike(Long filmId, Long userId) {
-        filmAndUserValidation(filmId, userId);
-        String sqlQuery = "delete from users_liked_films where film_id = ? AND user_id = ?";
-        jdbcTemplate.update(sqlQuery, filmId, userId);
+        validateFilmAndUser(filmId, userId);
+        jdbcTemplate.update(Constant.QUERY_DELETE_FILM_LIKE, filmId, userId);
         log.info("Пользователь c id = \"{}\" удалил лайк у фильма c id = \"{}\"", userId, filmId);
     }
 
     public void giveLike(Long filmId, Long userId) {
-        filmAndUserValidation(filmId, userId);
-        String sqlQuery = "INSERT INTO users_liked_films (user_id, film_id) values (?, ?);";
-        jdbcTemplate.update(sqlQuery, userId, filmId);
+        validateFilmAndUser(filmId, userId);
+        jdbcTemplate.update(Constant.QUERY_ADD_FILM_LIKE, userId, filmId);
         log.info("Пользователь c id = \"{}\" поставил лайк фильму c id = \"{}\"", userId, filmId);
     }
 
-    private void filmAndUserValidation(Long filmId, Long userId) {
+    private void validateFilmAndUser(Long filmId, Long userId) {
         if (userDbStorage.getUserById(userId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
             throw new UserNotFoundException("Пользователь не найден");

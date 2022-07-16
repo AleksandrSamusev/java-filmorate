@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;

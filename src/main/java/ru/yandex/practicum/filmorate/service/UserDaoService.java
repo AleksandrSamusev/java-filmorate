@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.support.Constant;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,8 +46,7 @@ public class UserDaoService {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", friendId);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        String sqlQuery = "insert into friendship (user_id, friend_id, is_confirmed) values (?, ?, true);";
-        jdbcTemplate.update(sqlQuery, id, friendId);
+        jdbcTemplate.update(Constant.QUERY_ADD_FRIEND, id, friendId);
         log.info("Юзеру c id = \"{}\" добавлен друг c id = \"{}\"", id, friendId);
     }
 
@@ -56,11 +55,7 @@ public class UserDaoService {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        String sqlQuery = "SELECT u.* FROM users AS u" +
-                " JOIN friendship AS f ON u.user_id = f.friend_id" +
-                " WHERE f.user_id = ?;";
-        log.info("Список друзей пользователя c id = \"{}\"", id);
-        return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id);
+        return jdbcTemplate.query(Constant.QUERY_GET_LIST_OF_FRIENDS, this::mapRowToUser, id);
     }
 
     public void removeFriend(Long id, Long friendId) {
@@ -72,8 +67,7 @@ public class UserDaoService {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", friendId);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        String sqlQuery = "delete from friendship where user_id = ? and friend_id = ?";
-        jdbcTemplate.update(sqlQuery, id, friendId);
+        jdbcTemplate.update(Constant.QUERY_DELETE_FRIEND, id, friendId);
         log.info("У пользователя \"{}\" удален друг \"{}\"", id, friendId);
     }
 
@@ -86,15 +80,8 @@ public class UserDaoService {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", friendId);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        String sqlQuery = "SELECT * FROM users" +
-                " WHERE user_id IN (SELECT friend_id FROM friendship" +
-                " WHERE user_id = ? AND is_confirmed IS true" +
-                " OR user_id = ? AND is_confirmed IS true" +
-                " GROUP by friend_id" +
-                " HAVING count(friend_id) = 2);";
-
         log.info("Список общих друзей пользователей c id = \"{}\" и id = \"{}\"", id, friendId);
-        return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, friendId);
+        return jdbcTemplate.query(Constant.QUERY_GET_COMMON_FRIENDS_LIST, this::mapRowToUser, id, friendId);
     }
 
     public List<User> getAllUsers() {
