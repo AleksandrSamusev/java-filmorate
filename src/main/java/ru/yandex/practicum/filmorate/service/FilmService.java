@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -20,32 +19,32 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final UserDaoService userDaoService;
 
     @Autowired
-    public FilmService(InMemoryFilmStorage filmStorage, InMemoryUserStorage userStorage) {
+    public FilmService(InMemoryFilmStorage filmStorage, UserDaoService userDaoService) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
+        this.userDaoService = userDaoService;
     }
 
     public void giveLike(Long filmId, Long userId) {
         filmAndUserValidation(filmId, userId);
         log.info("Пользователь c id = \"{}\" поставил лайк фильму c id = \"{}\"", userId, filmId);
-        filmStorage.getFilmById(filmId).getUsersLikes().add(userId);
+        getFilmById(filmId).getUsersLikes().add(userId);
     }
 
     public void removeLike(Long filmId, Long userId) {
         filmAndUserValidation(filmId, userId);
         log.info("Пользователь c id = \"{}\" удалил лайк у фильма c id = \"{}\"", userId, filmId);
-        filmStorage.getFilmById(filmId).getUsersLikes().remove(userId);
+        getFilmById(filmId).getUsersLikes().remove(userId);
     }
 
     private void filmAndUserValidation(Long filmId, Long userId) {
-        if (userStorage.getUserById(userId) == null) {
+        if (userDaoService.getUserById(userId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        if (filmStorage.getFilmById(filmId) == null) {
+        if (getFilmById(filmId) == null) {
             log.info("FilmNotFoundException: фильм c id = \"{}\" не найден", filmId);
             throw new FilmNotFoundException("Фильм не найден");
         }
@@ -76,6 +75,17 @@ public class FilmService {
     }
 
     public Film getFilmById(Long id) {
-        return filmStorage.getFilmById(id);
+        if (id < 0) {
+            log.info("FilmNotFoundException: фильм c id = \"{}\" не найден", id);
+            throw new FilmNotFoundException("Фильм не найден");
+        }
+        for (Film film : getAllFilms()) {
+            if (film.getId().equals(id)) {
+                log.info("вернул фильм c id = \"{}\"", film.getId());
+                return film;
+            }
+        }
+        log.info("фильм c id = \"{}\" не найден", id);
+        throw new FilmNotFoundException("Фильм не найден");
     }
 }

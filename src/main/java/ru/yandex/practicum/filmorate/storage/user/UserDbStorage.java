@@ -29,16 +29,7 @@ public class UserDbStorage implements UserStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
-    public User getUserById(Long id) {
-        if (id < 0) {
-            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
-            throw new UserNotFoundException("Пользователь не найден");
-        }
-        String sqlQuery = "select * from users where user_id = ?";
-        log.info("Вернулся пользователь c id = \"{}\"", id);
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
-    }
+
 
     @Override
     public List<User> getAllUsers() {

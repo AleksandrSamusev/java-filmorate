@@ -17,6 +17,10 @@ import java.util.List;
 @Component
 public class MpaDbStorage {
 
+    private static final String QUERY_GET_MPA_BY_ID = "SELECT * FROM mpa_ratings WHERE id = ?";
+
+    public static final String QUERY_GET_ALL_MPA = "SELECT * FROM MPA_RATINGS";
+
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
     private final JdbcTemplate jdbcTemplate;
 
@@ -31,11 +35,11 @@ public class MpaDbStorage {
             throw new MpaNotFoundException("Рейтинг не найден");
         }
         log.info("Вернулся рейтинг c id = \"{}\"", id);
-        return jdbcTemplate.queryForObject(Constant.QUERY_GET_MPA_BY_ID, this::mapRowToMPA, id);
+        return jdbcTemplate.queryForObject(QUERY_GET_MPA_BY_ID, this::mapRowToMPA, id);
     }
 
     public List<MpaRating> getAllMPA() {
-        return jdbcTemplate.query(Constant.QUERY_GET_ALL_MPA, this::mapRowToMPA);
+        return jdbcTemplate.query(QUERY_GET_ALL_MPA, this::mapRowToMPA);
     }
 
     private MpaRating mapRowToMPA(ResultSet resultSet, int rowNum) throws SQLException {

@@ -9,7 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.support.Constant;
 
 import java.sql.Date;
@@ -30,15 +29,6 @@ public class FilmDbStorage implements FilmStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
-    public Film getFilmById(Long id) {
-        if (id > 0) {
-            String sqlQuery = "select * from films where film_id = ?";
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
-        }
-        log.info("FilmNotFoundException: Фильм c id = \"{}\" не найден", id);
-        throw new FilmNotFoundException("Фильм не найден");
-    }
 
     @Override
     public List<Film> getAllFilms() {
