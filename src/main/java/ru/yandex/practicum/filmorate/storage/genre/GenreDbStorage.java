@@ -5,10 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.support.Constant;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,11 +25,9 @@ public class GenreDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     public List<Genre> getAllGenres() {
         return jdbcTemplate.query(QUERY_GET_ALL_GENRES, this::mapRowToGenre);
     }
-
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
         return Genre.builder()

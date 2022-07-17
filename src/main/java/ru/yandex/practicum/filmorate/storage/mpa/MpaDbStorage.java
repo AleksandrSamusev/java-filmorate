@@ -18,7 +18,6 @@ import java.util.List;
 public class MpaDbStorage {
 
     public static final String QUERY_GET_ALL_MPA = "SELECT * FROM MPA_RATINGS";
-
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
     private final JdbcTemplate jdbcTemplate;
 
