@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,14 +39,12 @@ public class FilmDaoService {
     private final FilmDbStorage filmDbStorage;
     private final UserDaoService userDaoService;
 
-
     @Autowired
     public FilmDaoService(JdbcTemplate jdbcTemplate, FilmDbStorage filmDbStorage, UserDaoService userDaoService) {
         this.jdbcTemplate = jdbcTemplate;
         this.filmDbStorage = filmDbStorage;
         this.userDaoService = userDaoService;
     }
-
 
     public Film getFilmById(Long id) {
         if (id > 0) {

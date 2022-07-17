@@ -17,8 +17,6 @@ import java.util.List;
 @Component
 public class GenreDbStorage {
 
-    private static final String QUERY_GET_GENRE_BY_ID = "SELECT * FROM genres WHERE genre_id = ?";
-
     private static final String QUERY_GET_ALL_GENRES = "SELECT * FROM genres";
 
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
@@ -29,13 +27,6 @@ public class GenreDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Genre getGenreById(Integer id) {
-        if (id > 0) {
-            return jdbcTemplate.queryForObject(QUERY_GET_GENRE_BY_ID, this::mapRowToGenre, id);
-        }
-        log.info("GenreNotFoundException: жанр с id = \"{}\" не найден", id);
-        throw new GenreNotFoundException("Жанр не найден");
-    }
 
     public List<Genre> getAllGenres() {
         return jdbcTemplate.query(QUERY_GET_ALL_GENRES, this::mapRowToGenre);

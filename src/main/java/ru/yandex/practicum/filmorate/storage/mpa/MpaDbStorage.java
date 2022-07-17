@@ -17,8 +17,6 @@ import java.util.List;
 @Component
 public class MpaDbStorage {
 
-    private static final String QUERY_GET_MPA_BY_ID = "SELECT * FROM mpa_ratings WHERE id = ?";
-
     public static final String QUERY_GET_ALL_MPA = "SELECT * FROM MPA_RATINGS";
 
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
@@ -27,15 +25,6 @@ public class MpaDbStorage {
     @Autowired
     public MpaDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public MpaRating getMPAById(Integer id) {
-        if (id < 0) {
-            log.info("MpaNotFoundException: MPA рейтинг c id = \"{}\" не найден", id);
-            throw new MpaNotFoundException("Рейтинг не найден");
-        }
-        log.info("Вернулся рейтинг c id = \"{}\"", id);
-        return jdbcTemplate.queryForObject(QUERY_GET_MPA_BY_ID, this::mapRowToMPA, id);
     }
 
     public List<MpaRating> getAllMPA() {
