@@ -35,6 +35,8 @@ public class FilmDaoService {
     private static final String QUERY_ADD_FILM_LIKE = "INSERT INTO users_liked_films (" +
             "user_id, film_id) VALUES (?, ?);";
 
+    private static final String QUERY_GET_FILM_BY_ID = "SELECT * FROM films WHERE film_id = ?";
+
     private final JdbcTemplate jdbcTemplate;
     private final FilmDbStorage filmDbStorage;
     private final UserDaoService userDaoService;
@@ -48,8 +50,7 @@ public class FilmDaoService {
 
     public Film getFilmById(Long id) {
         if (id > 0) {
-            String sqlQuery = "select * from films where film_id = ?";
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
+            return jdbcTemplate.queryForObject(QUERY_GET_FILM_BY_ID, this::mapRowToFilm, id);
         }
         log.info("FilmNotFoundException: Фильм c id = \"{}\" не найден", id);
         throw new FilmNotFoundException("Фильм не найден");

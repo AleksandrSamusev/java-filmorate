@@ -20,6 +20,26 @@ import java.util.*;
 @Component
 public class FilmDbStorage implements FilmStorage {
 
+    private static final String QUERY_GET_ALL_FILMS = "SELECT * FROM FILMS";
+
+    private static final String QUERY_ADD_FILM = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE," +
+            " DURATION, MPA_RATING_ID, RATE)  VALUES (?, ?, ?, ?, ?, ?); ";
+
+    private static final String QUERY_ADD_GENRE= "insert into FILMS_GENRES (film_id, genre_id) VALUES (?, ?)";
+
+    private static final String QUERY_DELETE_GENRE_BY_FILM_ID = "DELETE FROM films_genres WHERE film_id = ?";
+
+    private static final String QUERY_UPDATE_FILM_BY_ID = "UPDATE FILMS SET " +
+            " NAME = ?, DESCRIPTION = ?,  RELEASE_DATE = ?," +
+            " DURATION = ?, MPA_RATING_ID = ?, RATE = ? " +
+            " WHERE FILM_ID = ?";
+
+    private static final String QUERY_GET_MPA_BY_ID = "SELECT * FROM mpa_ratings WHERE id = ?";
+
+    private static final String  QUERY_DELETE_FILM_BY_ID = "DELETE FROM films WHERE film_id = ?";
+
+    private static final String QUERY_GET_GENRES_BY_FILM_ID = "SELECT * FROM genres JOIN FILMS_GENRES FG " +
+            "ON GENRES.GENRE_ID = FG.GENRE_ID  WHERE FG.FILM_ID = ? ";
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
     private final JdbcTemplate jdbcTemplate;
 
@@ -32,21 +52,15 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAllFilms() {
-        String sqlQuery = "select * from FILMS";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
+        return jdbcTemplate.query(QUERY_GET_ALL_FILMS, this::mapRowToFilm);
     }
 
     @Override
     public Film addFilm(Film film) throws ValidationException {
         if (isValid(film)) {
-            String sqlQuery = "insert into FILMS (NAME, DESCRIPTION, RELEASE_DATE," +
-                    " DURATION, MPA_RATING_ID, RATE)  values (?, ?, ?, ?, ?, ?); ";
-
-            String sqlQueryForFilmsGenres = "insert into FILMS_GENRES (film_id, genre_id) VALUES (?, ?)";
-
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
-                PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
+                PreparedStatement stmt = connection.prepareStatement(QUERY_ADD_FILM, new String[]{"FILM_ID"});
                 stmt.setString(1, film.getName());
                 stmt.setString(2, film.getDescription());
                 stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
@@ -63,7 +77,7 @@ public class FilmDbStorage implements FilmStorage {
 
                 if (newSet.size() > 0) {
                     for (Genre genre : newSet) {
-                        jdbcTemplate.update(sqlQueryForFilmsGenres, film.getId(), genre.getId());
+                        jdbcTemplate.update(QUERY_ADD_GENRE, film.getId(), genre.getId());
                     }
                 }
             }
@@ -76,20 +90,12 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) throws ValidationException {
 
-        String sqlQueryForFilmsGenres = "insert into FILMS_GENRES (film_id, genre_id) VALUES (?, ?)";
-
-
-        String sqlQueryForDeleteFromFilmsGenres = "delete from films_genres where film_id = ?";
-
         if (film.getId() < 0) {
             throw new FilmNotFoundException("Фильм не найден");
         }
         if (isValid(film)) {
-            String sqlQuery = "update FILMS set " +
-                    " NAME = ?, DESCRIPTION = ?,  RELEASE_DATE = ?," +
-                    " DURATION = ?, MPA_RATING_ID = ?, RATE = ? " +
-                    " where FILM_ID = ?";
-            jdbcTemplate.update(sqlQuery
+
+            jdbcTemplate.update(QUERY_UPDATE_FILM_BY_ID
                     , film.getName()
                     , film.getDescription()
                     , film.getReleaseDate()
@@ -103,11 +109,11 @@ public class FilmDbStorage implements FilmStorage {
                 film.setGenres(new ArrayList<>(newSet));
 
                 if (newSet.size() == 0) {
-                    jdbcTemplate.update(sqlQueryForDeleteFromFilmsGenres, film.getId());
+                    jdbcTemplate.update(QUERY_DELETE_GENRE_BY_FILM_ID, film.getId());
                 } else {
-                    jdbcTemplate.update(sqlQueryForDeleteFromFilmsGenres, film.getId());
+                    jdbcTemplate.update(QUERY_DELETE_GENRE_BY_FILM_ID, film.getId());
                     for (Genre genre : newSet) {
-                        jdbcTemplate.update(sqlQueryForFilmsGenres, film.getId(), genre.getId());
+                        jdbcTemplate.update(QUERY_ADD_GENRE, film.getId(), genre.getId());
                     }
                 }
             }
@@ -118,24 +124,19 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteFilm(Long id) {
-        String sqlQuery = "delete from films where film_id = ?";
-        jdbcTemplate.update(sqlQuery, id);
+    public void deleteFilm(Long id) {        ;
+        jdbcTemplate.update(QUERY_DELETE_FILM_BY_ID, id);
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
-
-        String sqlQuery = "select * from mpa_ratings where id = ?";
-        String sqlQueryForGenre = "select * from genres join FILMS_GENRES FG " +
-                "on GENRES.GENRE_ID = FG.GENRE_ID  WHERE FG.FILM_ID = ? ";
 
         return Film.builder()
                 .id(resultSet.getLong("film_id"))
                 .rate(resultSet.getInt("rate"))
                 .name(resultSet.getString("name"))
-                .mpa(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMPA,
+                .mpa(jdbcTemplate.queryForObject(QUERY_GET_MPA_BY_ID, this::mapRowToMPA,
                         resultSet.getInt("mpa_rating_id")))
-                .genres(jdbcTemplate.query(sqlQueryForGenre,
+                .genres(jdbcTemplate.query(QUERY_GET_GENRES_BY_FILM_ID,
                         this::mapRowToGenre, resultSet.getLong("film_id")))
                 .description(resultSet.getString("description"))
                 .releaseDate(resultSet.getDate("release_date").toLocalDate())

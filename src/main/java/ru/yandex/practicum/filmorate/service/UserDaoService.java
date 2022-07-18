@@ -33,6 +33,8 @@ public class UserDaoService {
             " GROUP by friend_id" +
             " HAVING count(friend_id) = 2);";
 
+    private static final String QUERY_GET_ALL_USERS_BY_ID = "SELECT * FROM users WHERE user_id = ?";
+
     private final JdbcTemplate jdbcTemplate;
     private final UserDbStorage userDbStorage;
 
@@ -48,9 +50,8 @@ public class UserDaoService {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
             throw new UserNotFoundException("Пользователь не найден");
         }
-        String sqlQuery = "select * from users where user_id = ?";
         log.info("Вернулся пользователь c id = \"{}\"", id);
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
+        return jdbcTemplate.queryForObject(QUERY_GET_ALL_USERS_BY_ID, this::mapRowToUser, id);
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
