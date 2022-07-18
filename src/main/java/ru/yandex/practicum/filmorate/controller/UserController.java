@@ -3,57 +3,56 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.service.UserDaoService;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
-
 
 @RestController
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserDaoService userDaoService;
 
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserDaoService userDaoService) {
+        this.userDaoService = userDaoService;
     }
+
 
     @GetMapping
     public List<User> getAllUsers() {
-        return userService.getAllUsers();
+        return userDaoService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public User userById(@PathVariable Long id) throws UserNotFoundException {
-        return userService.getUserById(id);
+    public User userById(@PathVariable Long id) {
+        return userDaoService.getUserById(id);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> listOfFriends(@PathVariable Long id) {
-        return userService.getFriendsList(id);
+        return userDaoService.getFriendsList(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> listOfCommonFriends(
             @PathVariable Long id,
             @PathVariable Long otherId) {
-        return userService.getCommonFriendsList(id, otherId);
+        return userDaoService.getCommonFriendsList(id, otherId);
     }
 
     @PostMapping
-    public User addUser(@Valid @RequestBody User user) throws ValidationException {
-        return userService.addUser(user);
+    public User addUser(@RequestBody User user) throws ValidationException {
+        return userDaoService.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) throws ValidationException {
-        return userService.updateUser(user);
+        return userDaoService.updateUser(user);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
@@ -61,7 +60,7 @@ public class UserController {
             @PathVariable Long id,
             @PathVariable Long friendId
     ) {
-        userService.addFriend(id, friendId);
+        userDaoService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
@@ -69,11 +68,11 @@ public class UserController {
             @PathVariable Long id,
             @PathVariable Long friendId
     ) {
-        userService.removeFriend(id, friendId);
+        userDaoService.removeFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}")
     public void removeUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+        userDaoService.deleteUser(id);
     }
 }

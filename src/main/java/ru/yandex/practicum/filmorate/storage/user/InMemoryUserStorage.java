@@ -16,6 +16,7 @@ import java.util.Map;
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
+
     private Map<Long, User> users = new HashMap<>();
 
     @Override
@@ -24,6 +25,8 @@ public class InMemoryUserStorage implements UserStorage {
         userList.addAll(users.values());
         return userList;
     }
+
+
 
     @Override
     public User addUser(User user) throws ValidationException, UserNotFoundException {

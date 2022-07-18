@@ -18,27 +18,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserService userService;
+    private final UserDaoService userDaoService;
 
     @Autowired
-    public FilmService(InMemoryFilmStorage filmStorage, UserService userService) {
+    public FilmService(InMemoryFilmStorage filmStorage, UserDaoService userDaoService) {
         this.filmStorage = filmStorage;
-        this.userService = userService;
-    }
-
-    public Film getFilmById(Long id) {
-        if (id < 0) {
-            log.info("FilmNotFoundException: фильм c id = \"{}\" не найден", id);
-            throw new FilmNotFoundException("Фильм не найден");
-        }
-        for (Film film : filmStorage.getAllFilms()) {
-            if (film.getId().equals(id)) {
-                log.info("вернул фильм c id = \"{}\"", film.getId());
-                return film;
-            }
-        }
-        log.info("фильм c id = \"{}\" не найден", id);
-        throw new FilmNotFoundException("Фильм не найден");
+        this.userDaoService = userDaoService;
     }
 
     public void giveLike(Long filmId, Long userId) {
@@ -54,7 +39,7 @@ public class FilmService {
     }
 
     private void filmAndUserValidation(Long filmId, Long userId) {
-        if (userService.getUserById(userId) == null) {
+        if (userDaoService.getUserById(userId) == null) {
             log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", userId);
             throw new UserNotFoundException("Пользователь не найден");
         }
@@ -86,5 +71,20 @@ public class FilmService {
 
     public void deleteFilm(Long id) {
         filmStorage.deleteFilm(id);
+    }
+
+    public Film getFilmById(Long id) {
+        if (id < 0) {
+            log.info("FilmNotFoundException: фильм c id = \"{}\" не найден", id);
+            throw new FilmNotFoundException("Фильм не найден");
+        }
+        for (Film film : getAllFilms()) {
+            if (film.getId().equals(id)) {
+                log.info("вернул фильм c id = \"{}\"", film.getId());
+                return film;
+            }
+        }
+        log.info("фильм c id = \"{}\" не найден", id);
+        throw new FilmNotFoundException("Фильм не найден");
     }
 }

@@ -15,4 +15,6 @@ public interface UserStorage {
     User updateUser(User user) throws ValidationException, UserNotFoundException;
 
     void deleteUser(Long id);
+
+
 }

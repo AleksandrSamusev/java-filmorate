@@ -15,6 +15,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+
 public class UserService {
 
     private final UserStorage userStorage;
@@ -62,20 +63,6 @@ public class UserService {
         }
     }
 
-    public User getUserById(Long id) {
-        if (id < 0) {
-            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
-            throw new UserNotFoundException("Пользователь не найден");
-        }
-        for (User user : userStorage.getAllUsers()) {
-            if (user.getId().equals(id)) {
-                log.info("Вернулся пользователь c id = \"{}\"", user.getId());
-                return user;
-            }
-        }
-        log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
-        throw new UserNotFoundException("Пользователь не найден");
-    }
 
     public List<User> getFriendsList(Long userId) {
         if (getUserById(userId) == null) {
@@ -128,4 +115,18 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
+    public User getUserById(Long id) {
+        if (id < 0) {
+            log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
+            throw new UserNotFoundException("Пользователь не найден");
+        }
+        for (User user : getAllUsers()) {
+            if (user.getId().equals(id)) {
+                log.info("Вернулся пользователь c id = \"{}\"", user.getId());
+                return user;
+            }
+        }
+        log.info("UserNotFoundException: пользователь c id = \"{}\" не найден", id);
+        throw new UserNotFoundException("Пользователь не найден");
+    }
 }
