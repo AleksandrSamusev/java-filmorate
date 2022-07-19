@@ -41,6 +41,7 @@ public class FilmDbStorage implements FilmStorage {
     private static final String QUERY_GET_GENRES_BY_FILM_ID = "SELECT * FROM genres JOIN FILMS_GENRES FG " +
             "ON GENRES.GENRE_ID = FG.GENRE_ID  WHERE FG.FILM_ID = ? ";
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
+
     private final JdbcTemplate jdbcTemplate;
 
 
@@ -48,7 +49,6 @@ public class FilmDbStorage implements FilmStorage {
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
 
     @Override
     public List<Film> getAllFilms() {
